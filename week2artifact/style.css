@@ -1,0 +1,338 @@
+/* ── Reset & custom properties ─────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:           #060503;
+  --amber:        #c8913a;
+  --amber-bright: #f0b452;
+  --amber-mid:    #a07030;
+  --amber-dim:    #5a3e18;
+  --amber-faint:  #1e1408;
+  --font:         Consolas, 'Courier New', 'Lucida Console', monospace;
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+
+body {
+  background-color: var(--bg);
+  color: var(--amber);
+  font-family: var(--font);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── CRT scanlines (fixed overlay, pointer-events off) ──────── */
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.13) 3px,
+    rgba(0, 0, 0, 0.13) 4px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ── Machine panel ─────────────────────────────────────────── */
+
+.machine {
+  width: min(660px, 94vw);
+  border: 1px solid var(--amber-dim);
+  padding: 2.4rem 2.4rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  /* Subtle outer glow to suggest a glowing screen */
+  box-shadow:
+    0 0 0 1px var(--amber-faint),
+    0 0 30px rgba(200, 145, 58, 0.06),
+    inset 0 0 60px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+
+.machine-header {
+  text-align: center;
+}
+
+.machine-id {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--amber-dim);
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-weight: normal;
+  letter-spacing: 0.18em;
+  line-height: 1.5;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--amber-dim);
+}
+
+/* Divider lines around sections */
+.display-panel,
+.stats-panel {
+  border-top: 1px solid var(--amber-faint);
+  padding-top: 1.6rem;
+}
+
+/* ── Name display ──────────────────────────────────────────── */
+
+.display-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--amber-dim);
+  margin-bottom: 1rem;
+}
+
+.name-output {
+  min-height: 5.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(2.2rem, 9vw, 4.2rem);
+  letter-spacing: 0.35em;
+  color: var(--amber-bright);
+  /* Multi-layer glow: tight core, wide halo */
+  text-shadow:
+    0 0 6px  var(--amber-bright),
+    0 0 18px var(--amber),
+    0 0 40px rgba(200, 145, 58, 0.35),
+    0 0 80px rgba(200, 145, 58, 0.12);
+  /* Prevent layout jump when name changes length */
+  word-break: break-all;
+  text-align: center;
+}
+
+/* Blinking block cursor shown in idle/reset state */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor {
+  animation: blink 1s step-end infinite;
+  color: var(--amber-mid);
+  font-size: 0.7em;
+}
+
+/* Shown on completion */
+.done {
+  font-size: 0.45em;
+  letter-spacing: 0.2em;
+  color: var(--amber-dim);
+  animation: fadeIn 2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Stats ─────────────────────────────────────────────────── */
+
+.stats-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.stat-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  color: var(--amber-dim);
+  flex-shrink: 0;
+}
+
+.stat-value {
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  color: var(--amber);
+  text-align: right;
+  /* Monospace digits so the counter doesn't jitter */
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Controls ──────────────────────────────────────────────── */
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  border-top: 1px solid var(--amber-faint);
+  padding-top: 1.6rem;
+}
+
+.btn {
+  background: transparent;
+  border: 1px solid var(--amber-dim);
+  color: var(--amber-mid);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  padding: 0.55rem 1.6rem;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  min-width: 5rem;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--amber-mid);
+  border-color: var(--amber-mid);
+  color: var(--bg);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  color: var(--amber-faint);
+  border-color: var(--amber-faint);
+  cursor: not-allowed;
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+
+.machine-footer {
+  text-align: center;
+  border-top: 1px solid var(--amber-faint);
+  padding-top: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lore {
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--amber-dim);
+  font-style: italic;
+}
+
+.attribution {
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: var(--amber-faint);
+}
+
+/* ── Speed slider ────────────────────────────────────────────── */
+
+.speed-panel {
+  border-top: 1px solid var(--amber-faint);
+  padding-top: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.speed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+/* Cross-browser range reset then re-skin in amber */
+.speed-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--amber-dim);
+  outline: none;
+  cursor: pointer;
+}
+
+.speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--amber);
+  border: 1px solid var(--amber-bright);
+  cursor: pointer;
+  /* Square thumb fits the retro-terminal look better than a circle */
+  border-radius: 0;
+  box-shadow: 0 0 6px rgba(240, 180, 82, 0.4);
+}
+
+.speed-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--amber);
+  border: 1px solid var(--amber-bright);
+  cursor: pointer;
+  border-radius: 0;
+  box-shadow: 0 0 6px rgba(240, 180, 82, 0.4);
+}
+
+.speed-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--amber-dim);
+}
+
+.speed-slider::-moz-range-track {
+  height: 2px;
+  background: var(--amber-dim);
+}
+
+.speed-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.57rem;
+  letter-spacing: 0.1em;
+  color: var(--amber-dim);
+}
+
+/* ── Timer row highlight ────────────────────────────────────── */
+
+.timer-row .stat-value {
+  color: var(--amber-bright);
+}
+
+/* Dimmed value (static benchmark) */
+.stat-dim {
+  color: var(--amber-dim) !important;
+}
+
+/* ── Star cutscene canvas ────────────────────────────────────── */
+/* Sits above everything; JS fades it in after machine fades out  */
+
+#cutscene {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  z-index: 9000;
+  opacity: 0;
+  /* transition applied by JS so it only triggers on insertion */
+}
